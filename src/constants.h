@@ -3,10 +3,10 @@
 
 extern char INFILE_PATH[];
 
+extern char MATRIX_PARSED_SUCCESSFULLY[];
 extern char FILE_NOT_FOUND_ERROR[];
 extern char FILE_IS_EMPTY_ERROR[];
 extern char UNPARSEABLE_ERROR[];
-extern char NOT_A_MATRIX_ERROR[];
 extern char NOT_A_QUADRATIC_MATRIX_ERROR[];
 extern char WRONG_ELEMENT_ERROR[];
 

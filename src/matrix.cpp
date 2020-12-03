@@ -5,6 +5,8 @@
 int getRows(std::ifstream& file) {
     std::string line;
     int rows = 0;
+    file.clear();
+    file.seekg(0);
     while (!file.eof()) {
         getline(file, line);
         ++rows;
@@ -71,6 +73,14 @@ char** getNewMatrix(int n) {
 char** getMatrixFromFile(std::ifstream& file, int& n, int& responseCode) {
     n = 0;
     if (file.is_open()) {
+        file.seekg(0, std::ios::end);
+        if (file.tellg() == 0) {
+            responseCode = matrix::FILE_IS_EMPTY;
+            return new char *;
+        }
+        file.clear();
+        file.seekg(0);
+
         std::string line;
         int rowIndex = 0;
         int rows = getRows(file);
@@ -88,10 +98,6 @@ char** getMatrixFromFile(std::ifstream& file, int& n, int& responseCode) {
                 responseCode = matrix::UNPARSEABLE;
                 deleteMatrix(matrix, rows);
                 return new char*;
-            } else if (columns == 0) {
-                responseCode = matrix::NOT_A_MATRIX;
-                deleteMatrix(matrix, rows);
-                return new char*;
             } else if (rows != columns) {
                 responseCode = matrix::NOT_A_QUADRATIC_MATRIX;
                 deleteMatrix(matrix, rows);
@@ -105,21 +111,19 @@ char** getMatrixFromFile(std::ifstream& file, int& n, int& responseCode) {
         file.clear();
         file.seekg(0);
 
-        if (rows == 1 && line.empty()) {
-            responseCode = matrix::FILE_IS_EMPTY;
-            deleteMatrix(matrix, rows);
-            return new char *;
-        } else if (rows == 1 && columns == 1) {
-            responseCode = matrix::NOT_A_MATRIX;
-            deleteMatrix(matrix, rows);
-            return new char *;
-        } else {
-            n = rows;
-            responseCode = matrix::SUCCESS;
-            return matrix;
-        }
+        n = rows;
+        responseCode = matrix::SUCCESS;
+        return matrix;
     } else {
         responseCode = matrix::FILE_NOT_FOUND;
         return new char*;
     }
+}
+
+char* getColumn(char** matrix, int n, int columnIndex) {
+    char* column = new char[n];
+    for (int i = 0; i < n; ++i) {
+        column[i] = matrix[i][columnIndex];
+    }
+    return column;
 }
