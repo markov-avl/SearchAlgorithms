@@ -61,7 +61,7 @@ int main() {
     char** matrix = getMatrixFromFile(infile, n, responseCode);
 
     if (responseCode == matrix::SUCCESS) {
-        cout << MATRIX_PARSED_SUCCESSFULLY << endl;
+        cout << MATRIX_PARSED_SUCCESSFULLY << endl << endl;
         useLinearSearchWithABarrier(matrix, n);
         cout << endl;
         useInterpolationSearch(matrix, n);
