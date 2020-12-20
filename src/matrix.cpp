@@ -1,4 +1,5 @@
 #include <fstream>
+#include <exception>
 #include "matrix.h"
 
 
@@ -16,43 +17,53 @@ int getRows(std::ifstream& file) {
     return rows;
 }
 
-/*
- * -1 - пустая строка
- * 0 - неправильно записана строка
- * иначе - количество столбцов
- */
 int getColumns(std::string& row) {
-    if (row.length() == 0) {
-        return -1;
-    } else if (row[0] == ' ') {
-        return 0;
-    } else {
-        int columns = 1;
-        int index = 0;
-        while (int(row.find(' ', index)) > 0) {
+    int columns = 0;
+    int index = 0;
+    int carriage = int(row.find(' ', index));
+    int rowLength = int(row.length());
+    while (carriage > 0) {
+        if (carriage - index > 0) {
             ++columns;
-            index = int(row.find(' ', index)) + 1;
-            if (index < row.length() && row[index] == ' ') {
-                return 0;
-            }
         }
-        return columns;
+        index = carriage + 1;
+        carriage = int(row.find(' ', index));
+        if (index < rowLength && carriage == -1) {
+            ++columns;
+        }
     }
+    return columns;
 }
 
 bool fillRowWithElements(char** matrix, std::string& row, int rowIndex, int n) {
     int rowLength = row.length();
-    if (rowLength == n * 2 - 1) {
-        for (int i = 0; i < rowLength; ++i) {
-            if (i % 2 == 0 && row[i] != ' ') {
-                matrix[rowIndex - 1][i / 2] = row[i];
-            } else if (i % 2 == 0 && row[i] == ' ' || i % 2 == 1 && row[i] != ' ') {
+    int column = 0;
+    int index = 0;
+    int carriage = int(row.find(' ', index));
+    std::string number;
+    while (carriage > 0) {
+        if (carriage - index > 0) {
+            number = row.substr(index, carriage);
+            try {
+                matrix[rowIndex][column] = char(std::stoi(number));
+                ++column;
+            } catch (std::logic_error e) {
                 return false;
             }
         }
-        return true;
+        index = carriage + 1;
+        carriage = int(row.find(' ', index));
+        if (index < rowLength && carriage == -1) {
+            number = row.substr(index, rowLength);
+            try {
+                matrix[rowIndex][column] = char(std::stoi(number));
+                ++column;
+            } catch (std::logic_error e) {
+                return false;
+            }
+        }
     }
-    return false;
+    return true;
 }
 
 void deleteMatrix(char** matrix, int n) {
@@ -76,7 +87,7 @@ char** getMatrixFromFile(std::ifstream& file, int& n, int& responseCode) {
         file.seekg(0, std::ios::end);
         if (file.tellg() == 0) {
             responseCode = matrix::FILE_IS_EMPTY;
-            return new char *;
+            return new char*;
         }
         file.clear();
         file.seekg(0);
@@ -88,7 +99,6 @@ char** getMatrixFromFile(std::ifstream& file, int& n, int& responseCode) {
         char** matrix = getNewMatrix(rows);
 
         while (!file.eof()) {
-            ++rowIndex;
             getline(file, line);
             if (int(line.find('\r')) > -1) {
                 line.erase(line.length() - 1);
@@ -107,6 +117,7 @@ char** getMatrixFromFile(std::ifstream& file, int& n, int& responseCode) {
                 deleteMatrix(matrix, rows);
                 return new char*;
             }
+            ++rowIndex;
         }
         file.clear();
         file.seekg(0);

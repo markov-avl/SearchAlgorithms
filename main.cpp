@@ -9,15 +9,16 @@ void useLinearSearchWithABarrier(char** matrix, int n) {
     using namespace std;
 
     int index;
+    int key;
     char* column;
-    char key[2];
     cout << "Введите ключ для линейного поиска с барьером (один символ): ";
-    cin.getline(key, 2);
-    cout << "Введен символ: " << key[0] << endl;
+    cin >> key;
+    cin.clear();
+    cout << "Введено число (результат каста): " << int(char(key)) << endl;
 
     for (int i = 0; i < n; ++i) {
         column = getColumn(matrix, n, i);
-        index = findUsingLinearSearchWithABarrier(column, n, key[0]);
+        index = findUsingLinearSearchWithABarrier(column, n, char(key));
         cout << i + 1 << " столбец: ";
         if (index == -1) {
             cout << "не найдено" << endl;
@@ -32,15 +33,16 @@ void useInterpolationSearch(char** matrix, int n) {
     using namespace std;
 
     int index;
+    int key;
     char* column;
-    char key[2];
     cout << "Введите ключ для интерполяционного поиска (один символ): ";
-    cin.getline(key, 2);
-    cout << "Введен символ: " << key[0] << endl;
+    cin >> key;
+    cin.clear();
+    cout << "Введено число (результат каста): " << int(char(key)) << endl;
 
     for (int i = 0; i < n; ++i) {
         column = getColumn(matrix, n, i);
-        index = findUsingInterpolationSearch(column, n, key[0]);
+        index = findUsingInterpolationSearch(column, n, char(key));
         cout << i + 1 << " столбец: ";
         if (index == -2) {
             cout << "вектор не отсортирован" << endl;
